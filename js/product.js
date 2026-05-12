@@ -1,13 +1,16 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { createGarment, setupLighting, setupEnvironment } from './garment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { createGarment, setupLighting, setupEnvironment, addContactShadow, tickSway } from './garment.js';
 
 // --- Read product id from URL ---
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id') || 'tshirt-essential';
 const product = window.ATELIER_PRODUCTS.find(p => p.id === id) || window.ATELIER_PRODUCTS[0];
 
-// --- Populate text ---
 document.getElementById('p-category').textContent = product.category;
 document.getElementById('p-title').textContent = product.name;
 document.getElementById('p-price').textContent = `$${product.price}`;
@@ -20,9 +23,43 @@ product.specs.forEach(([k, v]) => {
   specsEl.appendChild(li);
 });
 
-// --- Color swatches ---
+// --- 3D Viewer ---
+const canvas = document.getElementById('product-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+setupEnvironment(renderer, scene);
+setupLighting(scene);
+
+const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+camera.position.set(0, 0, 10);
+
+const typeKey = product.id === 'jacket-leather' ? 'leather'
+              : product.id === 'pants-denim' ? 'denim'
+              : product.type;
+const garment = createGarment(typeKey, product.defaultColor);
+scene.add(garment);
+
+// Shadow + contact disc
+const shadowPlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(20, 20),
+  new THREE.ShadowMaterial({ opacity: 0.45 })
+);
+shadowPlane.rotation.x = -Math.PI / 2;
+shadowPlane.position.y = -3.6;
+shadowPlane.receiveShadow = true;
+scene.add(shadowPlane);
+addContactShadow(scene, -3.59);
+
+// --- Color swatches (now that `garment` exists) ---
 const colorsWrap = document.getElementById('p-colors');
-product.colors.forEach((c, i) => {
+product.colors.forEach((c) => {
   const btn = document.createElement('button');
   btn.className = 'swatch';
   btn.style.background = c;
@@ -36,7 +73,6 @@ product.colors.forEach((c, i) => {
   colorsWrap.appendChild(btn);
 });
 
-// --- Size picker ---
 document.querySelectorAll('#p-sizes .size').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('#p-sizes .size').forEach(s => s.classList.remove('active'));
@@ -44,36 +80,15 @@ document.querySelectorAll('#p-sizes .size').forEach(b => {
   });
 });
 
-// --- 3D Viewer ---
-const canvas = document.getElementById('product-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
-
-const scene = new THREE.Scene();
-setupEnvironment(renderer, scene);
-setupLighting(scene);
-
-const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-camera.position.set(0, 0, 10);
-
-const typeKey = product.id === 'jacket-leather' ? 'leather' : product.type;
-const garment = createGarment(typeKey, product.defaultColor);
-scene.add(garment);
-
-// Shadow plane
-const shadowPlane = new THREE.Mesh(
-  new THREE.PlaneGeometry(20, 20),
-  new THREE.ShadowMaterial({ opacity: 0.3 })
+// --- Post-processing ---
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(
+  new THREE.Vector2(canvas.clientWidth, canvas.clientHeight),
+  0.3, 0.7, 0.88
 );
-shadowPlane.rotation.x = -Math.PI / 2;
-shadowPlane.position.y = -3.6;
-shadowPlane.receiveShadow = true;
-scene.add(shadowPlane);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
 
 // Orbit controls
 const controls = new OrbitControls(camera, canvas);
@@ -85,7 +100,6 @@ controls.maxPolarAngle = Math.PI * 0.75;
 controls.minPolarAngle = Math.PI * 0.25;
 controls.autoRotate = true;
 controls.autoRotateSpeed = 0.8;
-
 canvas.addEventListener('pointerdown', () => controls.autoRotate = false);
 
 function resize() {
@@ -93,27 +107,28 @@ function resize() {
   const w = wrap.clientWidth;
   const h = wrap.clientHeight;
   renderer.setSize(w, h, false);
+  composer.setSize(w, h);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
 resize();
 window.addEventListener('resize', resize);
 
+const clock = new THREE.Clock();
 function tick() {
+  tickSway(clock.getElapsedTime());
   controls.update();
-  renderer.render(scene, camera);
+  composer.render();
   requestAnimationFrame(tick);
 }
 tick();
 
-// Entrance animation
 gsap.from(garment.position, { y: -6, duration: 1.4, ease: 'power3.out' });
 gsap.from(garment.rotation, { y: -Math.PI, duration: 1.6, ease: 'power3.out' });
 gsap.from('.product-info > *', {
   x: 30, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out'
 });
 
-// Add to bag
 document.getElementById('add-to-bag').addEventListener('click', () => {
   window.ATELIER_CART.add();
   const btn = document.getElementById('add-to-bag');

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createGarment, setupLighting, setupEnvironment } from './garment.js';
+import { createGarment, setupLighting, setupEnvironment, addContactShadow, tickSway } from './garment.js';
 
 const grid = document.getElementById('shop-grid');
 const filters = document.querySelectorAll('.filter');
@@ -26,7 +26,9 @@ function render(filter) {
     `;
     grid.appendChild(card);
 
-    const typeKey = p.id === 'jacket-leather' ? 'leather' : p.type;
+    const typeKey = p.id === 'jacket-leather' ? 'leather'
+                  : p.id === 'pants-denim' ? 'denim'
+                  : p.type;
     initCard(card.querySelector('canvas'), typeKey, p.defaultColor, idx);
 
     gsap.from(card, {
@@ -51,6 +53,7 @@ function initCard(canvas, type, color, idx) {
 
   const g = createGarment(type, color);
   scene.add(g);
+  addContactShadow(scene, -3.3);
 
   function resize() {
     const w = canvas.clientWidth || canvas.parentElement.clientWidth;
@@ -75,6 +78,7 @@ function initCard(canvas, type, color, idx) {
   function tick() {
     if (visible) {
       const t = clock.getElapsedTime() + off;
+      tickSway(t);
       hover += (hoverTarget - hover) * 0.08;
       g.rotation.y = t * 0.35 + hover * 0.8;
       g.rotation.x = Math.sin(t * 0.5) * 0.08;
