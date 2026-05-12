@@ -159,21 +159,23 @@ gsap.registerPlugin(ScrollTrigger);
   });
 })();
 
-// ======= COLLECTION GRID =======
+// ======= COLLECTION GRID (real photography + 3D tilt) =======
 (function collectionGrid() {
   const grid = document.getElementById('collection-grid');
   if (!grid) return;
 
   const featured = window.ATELIER_PRODUCTS.slice(0, 6);
-  featured.forEach((p, idx) => {
+  featured.forEach((p) => {
     const card = document.createElement('a');
-    card.className = 'card reveal';
+    card.className = 'card reveal photo-card';
     card.href = `product.html?id=${p.id}`;
-    const typeKey = p.id === 'jacket-leather' ? 'leather'
-                  : p.id === 'pants-denim' ? 'denim'
-                  : p.type;
+    card.style.setProperty('--accent', p.accent);
     card.innerHTML = `
-      <canvas class="card-canvas" data-type="${typeKey}" data-color="${p.defaultColor}"></canvas>
+      <div class="card-media">
+        <div class="card-media-bg" style="background-color:${p.accent}"></div>
+        <img class="card-img" src="${p.image}" alt="${p.name}" loading="lazy" />
+        <div class="card-shine"></div>
+      </div>
       <div class="card-info">
         <div>
           <div class="card-cat">${p.category}</div>
@@ -183,7 +185,7 @@ gsap.registerPlugin(ScrollTrigger);
       </div>
     `;
     grid.appendChild(card);
-    initCardCanvas(card.querySelector('canvas'), idx);
+    attachTilt(card);
   });
 
   const io = new IntersectionObserver((entries) => {
@@ -192,59 +194,58 @@ gsap.registerPlugin(ScrollTrigger);
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 })();
 
-function initCardCanvas(canvas, idx) {
-  const type = canvas.dataset.type;
-  const color = canvas.dataset.color;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+// 3D-tilt interaction for photo cards: parallax image + moving light shine
+function attachTilt(card) {
+  const media = card.querySelector('.card-media');
+  const img = card.querySelector('.card-img');
+  const shine = card.querySelector('.card-shine');
+  if (!media || !img) return;
 
-  const scene = new THREE.Scene();
-  setupEnvironment(renderer, scene);
-  setupLighting(scene);
+  let rafId = null;
+  const state = { rx: 0, ry: 0, mx: 50, my: 50 };
+  const target = { rx: 0, ry: 0, mx: 50, my: 50 };
 
-  const camera = new THREE.PerspectiveCamera(30, 3/4, 0.1, 100);
-  camera.position.set(0, 0, 11);
-
-  const g = createGarment(type, color);
-  scene.add(g);
-  addContactShadow(scene, -3.3);
-
-  function resize() {
-    const w = canvas.clientWidth || canvas.parentElement.clientWidth;
-    const h = canvas.clientHeight || w * 4/3;
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
+  function onMove(e) {
+    const r = media.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width;   // 0..1
+    const ny = (e.clientY - r.top) / r.height;
+    target.ry = (nx - 0.5) * 14;                 // deg
+    target.rx = (0.5 - ny) * 14;
+    target.mx = nx * 100;
+    target.my = ny * 100;
   }
-  resize();
-  window.addEventListener('resize', resize);
-
-  let visible = false;
-  new IntersectionObserver((es) => es.forEach(e => visible = e.isIntersecting),
-    { threshold: 0.1 }).observe(canvas);
-
-  let hover = 0, hoverTarget = 0;
-  canvas.parentElement.addEventListener('mouseenter', () => hoverTarget = 1);
-  canvas.parentElement.addEventListener('mouseleave', () => hoverTarget = 0);
-
-  const clock = new THREE.Clock();
-  const offset = idx * 0.4;
-  function tick() {
-    if (visible) {
-      const t = clock.getElapsedTime() + offset;
-      tickSway(t);
-      hover += (hoverTarget - hover) * 0.08;
-      g.rotation.y = t * 0.3 + hover * 0.6;
-      g.rotation.x = Math.sin(t * 0.5) * 0.1;
-      g.scale.setScalar(1 + hover * 0.05);
-      renderer.render(scene, camera);
+  function onLeave() {
+    target.rx = target.ry = 0;
+    target.mx = target.my = 50;
+  }
+  function loop() {
+    state.rx += (target.rx - state.rx) * 0.12;
+    state.ry += (target.ry - state.ry) * 0.12;
+    state.mx += (target.mx - state.mx) * 0.15;
+    state.my += (target.my - state.my) * 0.15;
+    media.style.transform =
+      `perspective(900px) rotateX(${state.rx}deg) rotateY(${state.ry}deg)`;
+    img.style.transform =
+      `translate3d(${(state.ry) * 0.6}px, ${-state.rx * 0.6}px, 30px) scale(1.06)`;
+    if (shine) {
+      shine.style.background =
+        `radial-gradient(circle at ${state.mx}% ${state.my}%, rgba(255,255,255,0.22), transparent 55%)`;
     }
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(loop);
   }
-  tick();
+
+  card.addEventListener('pointerenter', () => { if (!rafId) loop(); });
+  card.addEventListener('pointermove', onMove);
+  card.addEventListener('pointerleave', () => {
+    onLeave();
+    setTimeout(() => { cancelAnimationFrame(rafId); rafId = null; }, 600);
+  });
+
+  // Graceful fallback if an image fails to load
+  img.addEventListener('error', () => {
+    img.style.display = 'none';
+    card.classList.add('no-img');
+  });
 }
 
 // ======= REVEALS =======

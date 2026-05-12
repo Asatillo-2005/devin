@@ -409,3 +409,132 @@ canvas { display: block; width: 100%; height: 100%; }
   .grid { grid-template-columns: 1fr; }
   .footer-cols { grid-template-columns: 1fr; }
 }
+
+
+/* ---------- PHOTO CARDS (real product photography + 3D tilt) ---------- */
+.photo-card {
+  --accent: #141418;
+  transform-style: preserve-3d;
+}
+.photo-card .card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(0) rotateY(0);
+  transition: transform 0.5s cubic-bezier(.2,.8,.2,1), box-shadow 0.5s;
+  will-change: transform;
+  background: #141418;
+}
+.photo-card:hover .card-media {
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7),
+              0 0 0 1px rgba(201,169,110,0.15);
+}
+.photo-card .card-media-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, #2a2a30 0%, #0e0e12 100%);
+  opacity: 0.6;
+  z-index: 0;
+}
+.photo-card .card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(.2,.8,.2,1), filter 0.5s;
+  filter: saturate(0.95) contrast(1.05);
+  will-change: transform;
+  z-index: 1;
+}
+.photo-card:hover .card-img {
+  filter: saturate(1.05) contrast(1.08);
+}
+.photo-card .card-shine {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0; transition: opacity 0.4s;
+  z-index: 2;
+}
+.photo-card:hover .card-shine { opacity: 1; }
+.photo-card.no-img .card-media-bg {
+  opacity: 1;
+  background: linear-gradient(160deg, var(--accent) 0%, #0b0b0d 100%);
+}
+.photo-card.no-img::after {
+  content: attr(data-fallback, 'Photo unavailable');
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  color: #c9a96e;
+  font-size: 1.2rem;
+  z-index: 2;
+}
+
+/* ---------- PRODUCT DETAIL: photo + 3D toggle ---------- */
+.product-media-wrap {
+  position: relative;
+}
+.media-toggle {
+  position: absolute;
+  top: 1rem; left: 1rem;
+  z-index: 10;
+  display: inline-flex;
+  background: rgba(11,11,13,0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 999px;
+  padding: 0.25rem;
+}
+.toggle-btn {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a8a49b;
+  border-radius: 999px;
+  transition: all 0.3s;
+}
+.toggle-btn.active {
+  background: #e8e4dc;
+  color: #0b0b0d;
+}
+
+.product-photo-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #1a1a20 0%, #0b0b0d 100%);
+  transform-style: preserve-3d;
+  transform: perspective(1200px);
+  transition: transform 0.5s cubic-bezier(.2,.8,.2,1);
+  will-change: transform;
+}
+.product-photo-wrap img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(.2,.8,.2,1);
+  will-change: transform;
+  filter: saturate(1.0) contrast(1.05);
+}
+.photo-shine {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Mobile: reduce tilt feel, remove photo transforms that could break layout */
+@media (max-width: 900px) {
+  .photo-card .card-media { transform: none !important; }
+  .photo-card .card-img { transform: none !important; }
+  .product-photo-wrap { transform: none !important; }
+  .product-photo-wrap img { transform: none !important; }
+  .media-toggle { top: 0.75rem; left: 0.75rem; }
+}

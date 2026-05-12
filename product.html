@@ -24,9 +24,21 @@
   </nav>
 
   <section class="product-page">
-    <div class="product-canvas-wrap">
-      <canvas id="product-canvas"></canvas>
-      <div class="viewer-hint">Drag to rotate · Scroll to zoom</div>
+    <div class="product-media-wrap">
+      <div class="media-toggle">
+        <button class="toggle-btn active" data-mode="photo">Photo</button>
+        <button class="toggle-btn" data-mode="3d">View in 3D</button>
+      </div>
+
+      <div class="product-photo-wrap" id="photo-view">
+        <img id="product-photo" src="" alt="" />
+        <div class="photo-shine"></div>
+      </div>
+
+      <div class="product-canvas-wrap" id="canvas-view" style="display:none">
+        <canvas id="product-canvas"></canvas>
+        <div class="viewer-hint">Drag to rotate &middot; Scroll to zoom</div>
+      </div>
     </div>
 
     <div class="product-info">
