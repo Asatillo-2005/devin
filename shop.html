@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — ATELIER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="logo">ATELIER</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html" class="active">Shop</a></li>
+      <li><a href="index.html#collection">Collection</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+    <div class="nav-actions">
+      <span class="cart-btn">Bag · <em id="cart-count">0</em></span>
+    </div>
+  </nav>
+
+  <header class="shop-head">
+    <span class="eyebrow">Shop · All Categories</span>
+    <h1 class="display">The full <span class="italic">wardrobe</span>.</h1>
+    <div class="filters">
+      <button class="filter active" data-filter="all">All</button>
+      <button class="filter" data-filter="tshirt">T-Shirts</button>
+      <button class="filter" data-filter="hoodie">Hoodies</button>
+      <button class="filter" data-filter="jacket">Jackets</button>
+      <button class="filter" data-filter="pants">Pants</button>
+    </div>
+  </header>
+
+  <section class="shop-grid-section">
+    <div class="grid grid-wide" id="shop-grid"></div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <span>© 2026 Atelier Studio</span>
+      <span>Rendered in real time · Three.js</span>
+    </div>
+  </footer>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/products.js"></script>
+  <script type="module" src="js/shop.js"></script>
+</body>
+</html>

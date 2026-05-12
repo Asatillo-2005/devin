@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATELIER — Premium Clothing, Reimagined in 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="logo">ATELIER</a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="#collection">Collection</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <div class="nav-actions">
+      <span class="cart-btn">Bag · <em id="cart-count">0</em></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-canvas-wrap">
+      <canvas id="hero-canvas"></canvas>
+    </div>
+    <div class="hero-text">
+      <span class="eyebrow">Spring · Summer · 2026</span>
+      <h1 class="display">Wear the<br><span class="italic">future</span>.</h1>
+      <p class="lede">Tailored garments, rendered in real time. Rotate, color, and inspect every thread before it reaches your door.</p>
+      <div class="hero-cta">
+        <a href="shop.html" class="btn btn-primary">Shop the collection</a>
+        <a href="#collection" class="btn btn-ghost">Explore</a>
+      </div>
+      <div class="color-swatches" aria-label="Change shirt color">
+        <button class="swatch" data-color="#1a1a1a" style="background:#1a1a1a" aria-label="Black"></button>
+        <button class="swatch" data-color="#f5f1e8" style="background:#f5f1e8" aria-label="Cream"></button>
+        <button class="swatch" data-color="#8b2e2e" style="background:#8b2e2e" aria-label="Crimson"></button>
+        <button class="swatch" data-color="#2e5d4a" style="background:#2e5d4a" aria-label="Forest"></button>
+        <button class="swatch" data-color="#3a4a6b" style="background:#3a4a6b" aria-label="Navy"></button>
+        <button class="swatch" data-color="#c9a96e" style="background:#c9a96e" aria-label="Gold"></button>
+      </div>
+    </div>
+    <div class="scroll-hint"><span></span>scroll</div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>T-SHIRTS</span><span>·</span><span>HOODIES</span><span>·</span><span>JACKETS</span><span>·</span><span>DENIM</span><span>·</span><span>KNITWEAR</span><span>·</span><span>ACCESSORIES</span><span>·</span>
+      <span>T-SHIRTS</span><span>·</span><span>HOODIES</span><span>·</span><span>JACKETS</span><span>·</span><span>DENIM</span><span>·</span><span>KNITWEAR</span><span>·</span><span>ACCESSORIES</span><span>·</span>
+    </div>
+  </div>
+
+  <!-- COLLECTION -->
+  <section class="collection" id="collection">
+    <header class="section-head">
+      <span class="eyebrow">The Collection</span>
+      <h2 class="display">Six silhouettes.<br>One philosophy.</h2>
+    </header>
+    <div class="grid" id="collection-grid"><!-- JS fills this --></div>
+    <div style="text-align:center;margin-top:4rem">
+      <a href="shop.html" class="btn btn-primary">View all products</a>
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  <section class="featured" id="featured">
+    <div class="featured-canvas-wrap">
+      <canvas id="featured-canvas"></canvas>
+    </div>
+    <div class="featured-text">
+      <span class="eyebrow">Signature Piece</span>
+      <h2 class="display italic">The Cashmere Hoodie</h2>
+      <p class="lede">Woven in Mongolia. Finished in Milan. A garment engineered for the next ten winters — not the next ten minutes.</p>
+      <ul class="specs">
+        <li><strong>Material</strong><span>100% Grade-A Cashmere</span></li>
+        <li><strong>Weight</strong><span>480 gsm</span></li>
+        <li><strong>Origin</strong><span>Hand-finished, Italy</span></li>
+      </ul>
+      <a href="product.html?id=hoodie-signature" class="btn btn-primary">Inspect in 3D</a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="about-inner">
+      <span class="eyebrow">Our Craft</span>
+      <h2 class="display">Fewer garments.<br><span class="italic">Better</span> garments.</h2>
+      <p class="lede">Atelier is a small studio obsessed with cut, cloth, and continuity. Every piece is modeled in 3D before a single thread is cut, so what you see is what arrives.</p>
+      <div class="stats">
+        <div class="stat"><span class="num">12</span><span class="lbl">Years crafting</span></div>
+        <div class="stat"><span class="num">47</span><span class="lbl">Master tailors</span></div>
+        <div class="stat"><span class="num">0</span><span class="lbl">Landfill</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="logo">ATELIER</div>
+      <div class="footer-cols">
+        <div><h4>Shop</h4><a href="shop.html">T-Shirts</a><a href="shop.html">Hoodies</a><a href="shop.html">Jackets</a><a href="shop.html">Denim</a></div>
+        <div><h4>Studio</h4><a href="#about">Philosophy</a><a href="#">Journal</a><a href="#">Press</a></div>
+        <div><h4>Care</h4><a href="#">Returns</a><a href="#">Sizing</a><a href="#">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Atelier Studio</span>
+      <span>Rendered in real time · Three.js</span>
+    </div>
+  </footer>
+
+  <!-- Libraries (CDN, import map for Three.js modules) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/products.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

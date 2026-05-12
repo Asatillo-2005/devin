@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product — ATELIER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="logo">ATELIER</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="index.html#collection">Collection</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+    <div class="nav-actions">
+      <span class="cart-btn">Bag · <em id="cart-count">0</em></span>
+    </div>
+  </nav>
+
+  <section class="product-page">
+    <div class="product-canvas-wrap">
+      <canvas id="product-canvas"></canvas>
+      <div class="viewer-hint">Drag to rotate · Scroll to zoom</div>
+    </div>
+
+    <div class="product-info">
+      <a href="shop.html" class="back-link">← Back to shop</a>
+      <span class="eyebrow" id="p-category">Category</span>
+      <h1 class="display italic" id="p-title">Product name</h1>
+      <div class="price" id="p-price">$0</div>
+      <p class="lede" id="p-desc">Description loads here.</p>
+
+      <div class="option-group">
+        <label class="option-label">Color</label>
+        <div class="color-swatches" id="p-colors"></div>
+      </div>
+
+      <div class="option-group">
+        <label class="option-label">Size</label>
+        <div class="size-picker" id="p-sizes">
+          <button class="size">XS</button>
+          <button class="size">S</button>
+          <button class="size active">M</button>
+          <button class="size">L</button>
+          <button class="size">XL</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="add-to-bag">Add to bag</button>
+
+      <details class="spec-accordion" open>
+        <summary>Details</summary>
+        <ul class="specs" id="p-specs"></ul>
+      </details>
+    </div>
+  </section>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/products.js"></script>
+  <script type="module" src="js/product.js"></script>
+</body>
+</html>
